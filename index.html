@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalyst Consulting · MSD Investment Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0B0B0B;--gold:#E9B92F;--paper:#FFFFFF;--soft:#F4F4F2;--line:#DDDDDA;--muted:#5C5C5C;--good:#1F7A4D;--bad:#B3261E}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Montserrat,Arial,sans-serif;color:var(--ink);background:var(--soft);line-height:1.5}
+  header{background:var(--ink);color:#fff;border-bottom:5px solid var(--gold)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  header .wrap{padding-top:28px;padding-bottom:28px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+  .brand{font-weight:800;letter-spacing:6px;font-size:22px}
+  .brand small{display:block;letter-spacing:3px;font-size:11px;font-weight:600;color:#bbb;margin-top:4px}
+  header h1{margin:0;font-size:clamp(22px,3vw,32px);font-weight:800;line-height:1.15}
+  header h1 span{color:var(--gold)}
+  header p{margin:6px 0 0;color:#cfcfcf;font-size:14px;max-width:620px}
+  main{padding:24px 0 48px}
+  .grid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--paper);border:1px solid var(--line);padding:20px}
+  .card h2{margin:0 0 4px;font-size:16px;font-weight:800}
+  .card .sub{margin:0 0 14px;font-size:13px;color:var(--muted)}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:2.5px;color:var(--muted);margin:18px 0 8px}
+  label{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;font-weight:600;margin:8px 0}
+  input[type=number]{width:120px;padding:7px 8px;font:inherit;font-weight:500;border:1px solid #BDBDB8;background:#fff;text-align:right}
+  input[type=number]:focus,input[type=range]:focus{outline:2px solid var(--gold);outline-offset:1px}
+  input[type=range]{width:100%;accent-color:#0B0B0B}
+  .rangeval{font-weight:800}
+  .ramp{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .ramp input{width:100%;text-align:center;padding:6px 2px}
+  .ramp span{display:block;font-size:11px;color:var(--muted);text-align:center;margin-bottom:3px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{font-size:11px;letter-spacing:1px;color:var(--muted);font-weight:700}
+  td input{width:90px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  @media (max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--ink);color:#fff;padding:16px;border-bottom:4px solid var(--gold)}
+  .kpi .v{font-size:26px;font-weight:800;line-height:1.1}
+  .kpi .l{font-size:12px;color:#cfcfcf;margin-top:6px}
+  .pos{color:#7DDFA6}.neg{color:#FF9A92}
+  .verdict{padding:14px 16px;font-size:14px;margin-bottom:20px;border-left:5px solid var(--gold);background:#FFF8E1}
+  .stack{display:flex;flex-direction:column;gap:20px}
+  .bar{height:10px;background:var(--soft);position:relative}
+  .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+  .bar.gold i{background:var(--gold)}
+  .roi-pos{color:var(--good);font-weight:700}.roi-neg{color:var(--bad);font-weight:700}
+  .note{font-size:12px;color:var(--muted);margin-top:10px}
+  svg text{font-family:Montserrat,Arial,sans-serif}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+  .legend b{display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:6px}
+  button{font:inherit;font-weight:700;font-size:13px;padding:9px 14px;border:1px solid var(--ink);background:#fff;cursor:pointer}
+  button:hover{background:var(--ink);color:#fff}
+  footer{font-size:12px;color:var(--muted);padding:20px 0 40px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div>
+      <div class="brand">CATALYST<small>CONSULTING · TEAM 1B</small></div>
+    </div>
+    <div>
+      <h1>Is £120m a year <span>creating value?</span></h1>
+      <p>An interactive investment appraisal for MSD's new chronic-condition therapy. Change any input and every result updates.</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <!-- INPUTS -->
+    <section class="card" aria-labelledby="in-h">
+      <h2 id="in-h">Assumptions</h2>
+      <p class="sub">Defaults are the example values in MSD's brief. Replace them with researched estimates.</p>
+
+      <div class="eyebrow">FINANCIALS</div>
+      <label for="price">Revenue per patient / year (£)<input id="price" type="number" value="20000" step="500" min="0"></label>
+      <label for="margin">Contribution margin (%)<input id="margin" type="number" value="75" step="1" min="0" max="100"></label>
+      <label for="wacc">Discount rate, WACC (%)<input id="wacc" type="number" value="10" step="0.5" min="0"></label>
+
+      <div class="eyebrow">UPTAKE RAMP (% OF STEADY-STATE UPTAKE)</div>
+      <div class="ramp" id="ramp"></div>
+      <p class="note">An S-shaped adoption curve: uptake builds as NICE guidance, formulary listings and clinician confidence come through.</p>
+
+      <div class="eyebrow">UPTAKE SCENARIO</div>
+      <input id="scen" type="range" min="50" max="150" step="5" value="100" aria-label="Uptake scenario as a percentage of base">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>Low (50%)</span><span>Base: <span class="rangeval" id="scenv">100%</span></span><span>High (150%)</span></div>
+
+      <div class="eyebrow">DIMINISHING RETURNS</div>
+      <label for="beta">Response elasticity (β)<input id="beta" type="number" value="0.7" step="0.05" min="0.1" max="0.95"></label>
+      <p class="note">β &lt; 1 means each extra £ in a channel wins fewer new patients than the last, which is what response-curve studies of pharma promotion usually find. Used only for the reallocation.</p>
+
+      <div style="margin-top:16px"><button id="reset" type="button">Reset to brief defaults</button></div>
+    </section>
+
+    <!-- RESULTS -->
+    <div class="stack">
+      <div class="kpis">
+        <div class="kpi"><div class="v" id="k-npv">–</div><div class="l">5-year NPV</div></div>
+        <div class="kpi"><div class="v" id="k-irr">–</div><div class="l">IRR (vs WACC)</div></div>
+        <div class="kpi"><div class="v" id="k-be">–</div><div class="l">Break-even patients / year</div></div>
+        <div class="kpi"><div class="v" id="k-roi">–</div><div class="l">Steady-state ROI</div></div>
+      </div>
+      <div class="verdict" id="verdict">–</div>
+
+      <section class="card" aria-labelledby="ch-h">
+        <h2 id="ch-h">Which channels deliver the highest ROI?</h2>
+        <p class="sub">Annual spend and the extra patients each channel brings in at steady state. Edit the numbers.</p>
+        <table>
+          <thead><tr><th>Channel</th><th>Spend (£m)</th><th>Patients</th><th>Cost / patient</th><th>ROI</th><th style="width:22%">Share of patients</th></tr></thead>
+          <tbody id="chan"></tbody>
+          <tfoot><tr><th>Total</th><th id="t-spend"></th><th id="t-pat"></th><th id="t-cpp"></th><th id="t-roi"></th><th></th></tr></tfoot>
+        </table>
+      </section>
+
+      <section class="card" aria-labelledby="cf-h">
+        <h2 id="cf-h">Cash flows over time</h2>
+        <p class="sub">Investment at the start of each year, contribution at the end, discounted at WACC.</p>
+        <div id="chart"></div>
+        <div class="legend"><span><b style="background:#0B0B0B"></b>Annual net cash flow</span><span><b style="background:#E9B92F"></b>Cumulative discounted cash flow</span></div>
+      </section>
+
+      <section class="card" aria-labelledby="opt-h">
+        <h2 id="opt-h">Optimise capital allocation: same £ budget, better mix</h2>
+        <p class="sub">We move the same total budget towards the channels with the highest marginal return, allowing for diminishing returns.</p>
+        <table>
+          <thead><tr><th>Channel</th><th>Current (£m)</th><th>Optimised (£m)</th><th>Change</th></tr></thead>
+          <tbody id="opt"></tbody>
+        </table>
+        <p class="note" id="opt-sum"></p>
+      </section>
+
+      <section class="card" aria-labelledby="sen-h">
+        <h2 id="sen-h">Sensitivity: what moves NPV most?</h2>
+        <p class="sub">NPV when each input moves ±20% on its own.</p>
+        <table>
+          <thead><tr><th>Input</th><th>−20%</th><th>Base</th><th>+20%</th><th>Swing</th></tr></thead>
+          <tbody id="sens"></tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer class="wrap">
+  Catalyst Consulting is a fictional consultancy created by University of Westminster students (Financial Industries, 5FNCE016W) for a live brief from MSD UK. Figures are illustrative and based on stated assumptions; this is not investment advice.
+</footer>
+
+<script>
+(function(){
+  var DEF = {
+    price:20000, margin:75, wacc:10, beta:0.7, scen:100,
+    ramp:[35,80,100,120,130],
+    ch:[["Sales force",50,4000],["Medical education",30,3000],["Digital marketing",20,1000],["Patient support",20,2000]]
+  };
+  var $ = function(id){return document.getElementById(id);};
+  var gbp = function(v,d){ d = d===undefined?1:d; var s=(Math.abs(v)/1e6).toFixed(d); return (v<0?"−":"")+"£"+s+"m"; };
+  var pct = function(v,d){ d = d===undefined?0:d; return (v*100).toFixed(d)+"%"; };
+  var int = function(v){ return Math.round(v).toLocaleString("en-GB"); };
+
+  function build(){
+    var r=$("ramp"); r.innerHTML="";
+    DEF.ramp.forEach(function(v,i){
+      var w=document.createElement("div");
+      w.innerHTML='<span>Year '+(i+1)+'</span><input type="number" min="0" step="5" value="'+v+'" aria-label="Year '+(i+1)+' uptake percentage">';
+      r.appendChild(w);
+    });
+    var t=$("chan"); t.innerHTML="";
+    DEF.ch.forEach(function(c,i){
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+c[0]+'</td><td><input type="number" min="0" step="1" value="'+c[1]+'" aria-label="'+c[0]+' spend £m"></td>'+
+        '<td><input type="number" min="0" step="100" value="'+c[2]+'" aria-label="'+c[0]+' patients"></td><td class="cpp"></td><td class="roi"></td><td><div class="bar"><i></i></div></td>';
+      t.appendChild(tr);
+    });
+    $("price").value=DEF.price; $("margin").value=DEF.margin; $("wacc").value=DEF.wacc; $("beta").value=DEF.beta; $("scen").value=DEF.scen;
+    document.querySelectorAll("input").forEach(function(el){ el.addEventListener("input", calc); });
+  }
+
+  function read(){
+    var num=function(id){ var v=parseFloat($(id).value); return isFinite(v)?v:0; };
+    var ramp=[].map.call($("ramp").querySelectorAll("input"),function(e){var v=parseFloat(e.value);return isFinite(v)?v/100:0;});
+    var rows=[].map.call($("chan").querySelectorAll("tr"),function(tr,i){
+      var ins=tr.querySelectorAll("input");
+      return {name:DEF.ch[i][0], spend:(parseFloat(ins[0].value)||0)*1e6, pat:parseFloat(ins[1].value)||0, tr:tr};
+    });
+    return {price:num("price"), m:num("margin")/100, r:num("wacc")/100, beta:Math.min(0.95,Math.max(0.1,num("beta"))), scen:num("scen")/100, ramp:ramp, rows:rows};
+  }
+
+  // Core model: invest I at start of each year (t=0..N-1), contribution at end of each year (t=1..N)
+  function model(p, o){
+    o = o || {};
+    var price=p.price*(o.price||1), m=p.m*(o.m||1), r=p.r*(o.r||1), up=p.scen*(o.up||1);
+    var I=o.I!==undefined?o.I:p.rows.reduce(function(s,x){return s+x.spend;},0);
+    var ss=(o.pat!==undefined?o.pat:p.rows.reduce(function(s,x){return s+x.pat;},0))*up;
+    var N=p.ramp.length, pvI=0, pvC=0, flows=[], cf=[];
+    for(var t=0;t<N;t++){
+      var C=ss*p.ramp[t]*price*m;
+      pvI+=I/Math.pow(1+r,t); pvC+=C/Math.pow(1+r,t+1);
+      flows.push({inv:I,con:C});
+    }
+    cf.push(-I);
+    for(t=1;t<N;t++) cf.push(flows[t-1].con-I);
+    cf.push(flows[N-1].con);
+    return {npv:pvC-pvI, pvI:pvI, pvC:pvC, flows:flows, cf:cf, I:I, ss:ss, price:price, m:m, r:r};
+  }
+
+  function irr(cf){
+    var f=function(x){return cf.reduce(function(s,c,i){return s+c/Math.pow(1+x,i);},0);};
+    var lo=-0.99, hi=5, flo=f(lo), fhi=f(hi);
+    if(flo*fhi>0) return NaN;
+    for(var k=0;k<200;k++){ var mid=(lo+hi)/2, fm=f(mid); if(flo*fm<=0){hi=mid;}else{lo=mid;flo=fm;} }
+    return (lo+hi)/2;
+  }
+
+  function chart(res){
+    var W=760,H=260,pl=58,pr=16,pt=16,pb=34;
+    var N=res.flows.length, net=[], cum=[], c=0;
+    for(var t=0;t<=N;t++){ var v=res.cf[t]; net.push(v); c+=v/Math.pow(1+res.r,t); cum.push(c); }
+    var all=net.concat(cum,[0]), mx=Math.max.apply(null,all), mn=Math.min.apply(null,all);
+    var pad=(mx-mn)*0.1||1; mx+=pad; mn-=pad;
+    var y=function(v){return pt+(mx-v)/(mx-mn)*(H-pt-pb);};
+    var bw=(W-pl-pr)/(N+1);
+    var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Chart of annual net cash flow and cumulative discounted cash flow by year">';
+    for(var g=0;g<=4;g++){ var gv=mn+(mx-mn)*g/4; s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(gv)+'" y2="'+y(gv)+'" stroke="#E6E6E2"/><text x="'+(pl-6)+'" y="'+(y(gv)+4)+'" font-size="11" text-anchor="end" fill="#5C5C5C">'+gbp(gv,0)+'</text>'; }
+    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="#0B0B0B"/>';
+    var pts=[];
+    for(t=0;t<=N;t++){
+      var x=pl+bw*t+bw*0.22, w=bw*0.56, y0=y(0), y1=y(net[t]);
+      s+='<rect x="'+x+'" y="'+Math.min(y0,y1)+'" width="'+w+'" height="'+Math.max(1,Math.abs(y1-y0))+'" fill="'+(net[t]<0?'#0B0B0B':'#3A3A3A')+'"/>';
+      s+='<text x="'+(pl+bw*t+bw/2)+'" y="'+(H-12)+'" font-size="11" text-anchor="middle" fill="#5C5C5C">Year '+t+'</text>';
+      pts.push((pl+bw*t+bw/2)+","+y(cum[t]));
+    }
+    s+='<polyline points="'+pts.join(" ")+'" fill="none" stroke="#E9B92F" stroke-width="3"/>';
+    pts.forEach(function(p){var q=p.split(",");s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4" fill="#E9B92F" stroke="#0B0B0B"/>';});
+    s+='</svg>';
+    $("chart").innerHTML=s;
+  }
+
+  function calc(){
+    var p=read(); $("scenv").textContent=Math.round(p.scen*100)+"%";
+    var res=model(p), I=res.I, cpatient=p.price*p.m;
+    var rate=irr(res.cf);
+    var be=cpatient>0?I/cpatient:NaN;
+    var ssC=res.ss*cpatient, roi=I>0?(ssC-I)/I:NaN;
+
+    $("k-npv").innerHTML='<span class="'+(res.npv>=0?'pos':'neg')+'">'+gbp(res.npv)+'</span>';
+    $("k-irr").innerHTML=isFinite(rate)?'<span class="'+(rate>=p.r?'pos':'neg')+'">'+pct(rate,1)+'</span>':'n/a';
+    $("k-be").textContent=isFinite(be)?int(be):"n/a";
+    $("k-roi").innerHTML=isFinite(roi)?'<span class="'+(roi>=0?'pos':'neg')+'">'+pct(roi)+'</span>':'n/a';
+
+    var scaleBE=res.pvC>0?res.pvI/res.pvC:NaN;
+    var v;
+    if(res.npv>=0) v='<b>The investment creates value</b>, but only by '+gbp(res.npv)+' over five years. The margin of safety is thin: if uptake were '+(isFinite(scaleBE)?pct(1-scaleBE,1):'–')+' lower across all years, NPV would be zero.';
+    else v='<b>The investment destroys value</b> on these assumptions ('+gbp(res.npv)+'). Uptake would need to be '+(isFinite(scaleBE)?pct(scaleBE-1,1):'–')+' higher in every year to break even.';
+    v+=' Each year needs <b>'+int(be)+'</b> patients just to cover that year\'s £'+(I/1e6).toFixed(0)+'m spend.';
+    $("verdict").innerHTML=v;
+
+    // Channels
+    var totP=p.rows.reduce(function(s,x){return s+x.pat;},0);
+    p.rows.forEach(function(x){
+      var croi=x.spend>0?(x.pat*cpatient-x.spend)/x.spend:NaN, cpp=x.pat>0?x.spend/x.pat:NaN;
+      x.tr.querySelector(".cpp").textContent=isFinite(cpp)?"£"+int(cpp):"–";
+      x.tr.querySelector(".roi").innerHTML=isFinite(croi)?'<span class="'+(croi>=0?'roi-pos':'roi-neg')+'">'+pct(croi)+'</span>':'–';
+      x.tr.querySelector(".bar i").style.width=(totP>0?x.pat/totP*100:0)+"%";
+    });
+    $("t-spend").textContent=gbp(I,0); $("t-pat").textContent=int(totP);
+    $("t-cpp").textContent=totP>0?"£"+int(I/totP):"–";
+    var troi=I>0?(totP*cpatient-I)/I:NaN;
+    $("t-roi").innerHTML=isFinite(troi)?'<span class="'+(troi>=0?'roi-pos':'roi-neg')+'">'+pct(troi)+'</span>':'–';
+
+    chart(res);
+
+    // Optimisation: patients_c = a_c * spend_c^beta ; optimum spend_c ∝ a_c^(1/(1-beta))
+    var b=p.beta, act=p.rows.filter(function(x){return x.spend>0&&x.pat>0;});
+    var a=act.map(function(x){return x.pat/Math.pow(x.spend,b);});
+    var w=a.map(function(ai){return Math.pow(ai,1/(1-b));}), ws=w.reduce(function(s,x){return s+x;},0);
+    var budget=act.reduce(function(s,x){return s+x.spend;},0);
+    var newPat=0, html="";
+    act.forEach(function(x,i){
+      var ns=budget*w[i]/ws; newPat+=a[i]*Math.pow(ns,b);
+      var d=ns-x.spend;
+      html+='<tr><td>'+x.name+'</td><td>'+gbp(x.spend)+'</td><td><b>'+gbp(ns)+'</b></td><td class="'+(d>=0?'roi-pos':'roi-neg')+'">'+(d>=0?'+':'')+gbp(d)+'</td></tr>';
+    });
+    $("opt").innerHTML=html;
+    var curPat=act.reduce(function(s,x){return s+x.pat;},0);
+    var opt=model(p,{pat:newPat,I:budget});
+    $("opt-sum").innerHTML='Same '+gbp(budget,0)+' budget: steady-state patients go from <b>'+int(curPat*p.scen)+'</b> to <b>'+int(newPat*p.scen)+'</b>, and 5-year NPV from <b>'+gbp(res.npv)+'</b> to <b>'+gbp(opt.npv)+'</b> (β = '+b+'). The optimum is where the last £1 in every channel wins the same number of patients.';
+
+    // Sensitivity
+    var items=[["Uptake","up"],["Revenue per patient","price"],["Contribution margin","m"],["WACC","r"]];
+    var rows=items.map(function(it){
+      var lo={},hi={}; lo[it[1]]=0.8; hi[it[1]]=1.2;
+      var l=model(p,lo).npv, h=model(p,hi).npv;
+      return {n:it[0],l:l,h:h,s:Math.abs(h-l)};
+    });
+    var invL=model(p,{I:I*0.8}).npv, invH=model(p,{I:I*1.2}).npv;
+    rows.push({n:"Annual investment",l:invL,h:invH,s:Math.abs(invH-invL)});
+    rows.sort(function(x,y){return y.s-x.s;});
+    $("sens").innerHTML=rows.map(function(x){
+      return '<tr><td>'+x.n+'</td><td class="'+(x.l<0?'roi-neg':'roi-pos')+'">'+gbp(x.l)+'</td><td>'+gbp(res.npv)+'</td><td class="'+(x.h<0?'roi-neg':'roi-pos')+'">'+gbp(x.h)+'</td><td><b>'+gbp(x.s,0)+'</b></td></tr>';
+    }).join("");
+  }
+
+  build(); calc();
+  $("reset").addEventListener("click",function(){ build(); calc(); });
+})();
+</script>
+</body>
+</html>
